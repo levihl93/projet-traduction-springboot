@@ -5,6 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,27 +21,12 @@ import tunutech.api.services.JwtService;
 import java.io.IOException;
 
 @Component
+@ConditionalOnProperty(name = "security.jwt.enabled", havingValue = "true", matchIfMissing = false)
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private HandlerExceptionResolver handlerExceptionResolver;
-
-    private JwtService jwtService;
-    private UserDetailsService userDetailsService;
-
-    public  JwtAuthenticationFilter(
-            JwtService jwtService,
-            UserDetailsService userDetailsService,
-            HandlerExceptionResolver handlerExceptionResolver
-    ) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-        this.handlerExceptionResolver = handlerExceptionResolver;
-    }
-
-    public void JwtAuthentificationFilter(HandlerExceptionResolver handlerExceptionResolver, JwtService jwtService, UserDetailsService userDetailsService) {
-        this.handlerExceptionResolver = handlerExceptionResolver;
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-    }
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Override
     protected void doFilterInternal(
