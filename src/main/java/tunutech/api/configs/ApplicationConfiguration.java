@@ -1,6 +1,7 @@
 package tunutech.api.configs;
 
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import tunutech.api.repositories.UserRepository;
 
 @Configuration
+@ConditionalOnProperty(name = "security.jwt.enabled", havingValue = "true")
 public class ApplicationConfiguration {
     private final UserRepository userRepository;
 
