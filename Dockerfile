@@ -2,15 +2,11 @@
 FROM eclipse-temurin:17-jdk-alpine as builder
 WORKDIR /app
 
-# Copier les fichiers de configuration Maven d'abord
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
-# Télécharger les dépendances (cache si pom.xml ne change pas)
-RUN ./mvnw dependency:go-offline
+# Copier tout le projet
+COPY . .
 
-# Copier le code source et builder
-COPY src/ src/
-RUN ./mvnw clean package -DskipTests
+# Utiliser Maven directement au lieu de mvnw
+RUN mvn clean package -DskipTests
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-alpine
