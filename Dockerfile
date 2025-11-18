@@ -1,11 +1,7 @@
-# Build stage
-FROM eclipse-temurin:17-jdk-alpine as builder
+# Build stage avec Maven
+FROM maven:3.9-eclipse-temurin-17 as builder
 WORKDIR /app
-
-# Copier tout le projet
 COPY . .
-
-# Utiliser Maven directement au lieu de mvnw
 RUN mvn clean package -DskipTests
 
 # Runtime stage
