@@ -8,12 +8,16 @@ RUN ./mvnw clean package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
+# Créer les dossiers AVANT de changer d'utilisateur
+RUN mkdir -p /app/uploads/documents
+
 # Créer un utilisateur non-root
 RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
 
-# Créer le dossier pour les fichiers uploadés
-RUN mkdir -p /app/uploads/documents
+# Donner les permissions à l'utilisateur spring
+RUN chown -R spring:spring /app/uploads
+
+USER spring:spring
 
 # Copier le JAR depuis l'étape de build
 COPY --from=builder /app/target/*.jar app.jar
