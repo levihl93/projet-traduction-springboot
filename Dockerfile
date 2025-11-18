@@ -18,8 +18,8 @@ RUN addgroup -S spring && adduser -S spring -G spring
 RUN chown -R spring:spring /app/uploads
 USER spring:spring
 
-# Copier le JAR
-COPY --from=builder /app/target/*.jar app.jar
+# Copier le JAR avec le nom exact
+COPY --from=builder /app/target/api-0.0.1-SNAPSHOT.jar app.jar
 
 # Démarrer l'application
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
