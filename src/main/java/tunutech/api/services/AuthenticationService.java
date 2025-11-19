@@ -2,6 +2,7 @@ package tunutech.api.services;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +19,7 @@ import tunutech.api.repositories.UserRepository;
 import java.util.Optional;
 
 @Service
+@Profile("!nosecurity")
 public class AuthenticationService {
     private final UserRepository userRepository;
 
