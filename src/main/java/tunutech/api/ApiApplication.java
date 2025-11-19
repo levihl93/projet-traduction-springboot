@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableJpaRepositories(
 		basePackages = "tunutech.api.repositories",
-		enableDefaultTransactions = false  // ← IMPORTANT pour Railway
+		enableDefaultTransactions = false,  // ← IMPORTANT pour Railway
+		entityManagerFactoryRef = "entityManagerFactory",  // ← SPÉCIFIQUE
+		transactionManagerRef = "transactionManager"       // ← SPÉCIFIQUE
 )
 @EntityScan(basePackages = "tunutech.api.model")  // ← CRITIQUE
 public class ApiApplication {
