@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-@Table(name = "activity")
 @Entity
+@Table(name = "activity")
 @Getter
 @Setter
 @ToString
