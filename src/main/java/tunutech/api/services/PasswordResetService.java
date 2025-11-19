@@ -3,6 +3,7 @@ package tunutech.api.services;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Profile("!nosecurity")  // ← AJOUTEZ CETTE LIGNE
 public class PasswordResetService {
     private final PasswordResetTokenRepository tokenRepo;
     private final UserRepository userRepo;

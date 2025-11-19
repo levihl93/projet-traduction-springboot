@@ -1,6 +1,7 @@
 package tunutech.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,8 +19,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@RequestMapping("/auth")
 @RestController
+@RequestMapping("/auth")
+@Profile("!nosecurity")  // ← AJOUTEZ CETTE LIGNE
 public class AuthenticationController {
     private final JwtService jwtService;
     @Autowired
@@ -30,14 +32,10 @@ public class AuthenticationController {
     private UserEnableService userEnableService;
     @Autowired
     private TraducteurRepository traducteurRepository;
-
     @Autowired
     private ClientRepository clientRepository;
-
     @Autowired
     private UserRepository userRepository;
-
-
     public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, PasswordResetService resetService) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
@@ -71,7 +69,6 @@ public class AuthenticationController {
 
         return ResponseEntity.ok(userDto);
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginUserDto loginUserDto) {
