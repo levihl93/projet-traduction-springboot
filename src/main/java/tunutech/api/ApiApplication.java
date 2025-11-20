@@ -6,12 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EnableJpaRepositories(
-		basePackages = "tunutech.api.repositories",
-		enableDefaultTransactions = false,  // ← IMPORTANT pour Railway
-		entityManagerFactoryRef = "entityManagerFactory",  // ← SPÉCIFIQUE
-		transactionManagerRef = "transactionManager"       // ← SPÉCIFIQUE
-)
+@EnableJpaRepositories(basePackages = "tunutech.api.repositories")
 @EntityScan(basePackages = "tunutech.api.model")  // ← CRITIQUE
 public class ApiApplication {
 	public static void main(String[] args) {
