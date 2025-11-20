@@ -10,6 +10,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
+import java.util.Map;
 import java.util.Properties;
 
 @Configuration
@@ -19,37 +20,42 @@ public class ForceEntityManager {
     @Bean
     @Primary
     public DataSource dataSource() {
-        // DEBUG: Afficher toutes les variables d'environnement
-        System.out.println("=== VARIABLES D'ENVIRONNEMENT RAILWAY ===");
-        System.out.println("PGHOST: " + System.getenv("PGHOST"));
-        System.out.println("PGPORT: " + System.getenv("PGPORT"));
-        System.out.println("PGDATABASE: " + System.getenv("PGDATABASE"));
-        System.out.println("PGUSER: " + System.getenv("PGUSER"));
-        System.out.println("PGPASSWORD: " + (System.getenv("PGPASSWORD") != null ? "***" : "null"));
-        System.out.println("DATABASE_URL: " + System.getenv("DATABASE_URL"));
+        System.out.println("=== VÉRIFICATION DES VARIABLES (PostgreSQL ACTIF) ===");
 
-        // Chercher aussi les variables Railway spécifiques
-        System.out.println("RAILWAY_ENVIRONMENT: " + System.getenv("RAILWAY_ENVIRONMENT"));
+        // Afficher toutes les variables pour debug
+        Map<String, String> env = System.getenv();
+        env.forEach((key, value) -> {
+            System.out.println(key + ": " + value);
+        });
 
+        // Essayer les variables Railway standard
         String host = System.getenv("PGHOST");
         String port = System.getenv("PGPORT");
         String database = System.getenv("PGDATABASE");
         String username = System.getenv("PGUSER");
         String password = System.getenv("PGPASSWORD");
 
-        if (host == null) {
-            throw new IllegalStateException("❌ VARIABLES POSTGRESQL NON TROUVÉES sur Railway!");
+        if (host != null) {
+            System.out.println("✅ Variables PostgreSQL trouvées !");
+            String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, database);
+            System.out.println("URL: " + jdbcUrl);
+
+            return DataSourceBuilder.create()
+                    .url(jdbcUrl)
+                    .username(username)
+                    .password(password)
+                    .driverClassName("org.postgresql.Driver")
+                    .build();
+        } else {
+            throw new IllegalStateException("""
+                ❌ Variables PostgreSQL toujours pas trouvées !
+                
+                Sur Railway, allez dans :
+                1. Votre service d'application (Spring Boot)
+                2. Onglet "Variables" 
+                3. Vérifiez que les variables PostgreSQL sont injectées
+                """);
         }
-
-        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, database);
-        System.out.println("✅ URL JDBC: " + jdbcUrl);
-
-        return DataSourceBuilder.create()
-                .url(jdbcUrl)
-                .username(username)
-                .password(password)
-                .driverClassName("org.postgresql.Driver")
-                .build();
     }
 
     @Bean(name = "jpaSharedEM_entityManagerFactory")
@@ -69,6 +75,7 @@ public class ForceEntityManager {
         props.put("hibernate.hbm2ddl.auto", "update");
         props.put("hibernate.show_sql", "true");
         props.put("hibernate.format_sql", "true");
+        props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         em.setJpaProperties(props);
 
         return em;
