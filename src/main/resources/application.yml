@@ -1,16 +1,23 @@
 spring:
-  main:
-    allow-bean-definition-overriding: true
   profiles:
     active: nosecurity
   datasource:
-    url: ${DATABASE_URL}  # ← IMPORTANT : pas de value par défaut
+    url: ${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5  # ← RÉDUIRE le pool de connexions
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false  # ← DÉSACTIVER les logs SQL
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        format_sql: false  # ← DÉSACTIVER
+        # dialect: org.hibernate.dialect.PostgreSQLDialect  # ← COMMENTEZ
+
+# RÉDUIRE les logs
+logging:
+  level:
+    org.hibernate: WARN  # ← PASSER À WARN au lieu de INFO
+    com.zaxxer.hikari: WARN
+    org.springframework: WARN
