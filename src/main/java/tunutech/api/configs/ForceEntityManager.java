@@ -10,7 +10,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
-import java.util.Map;
 import java.util.Properties;
 
 @Configuration
@@ -20,42 +19,13 @@ public class ForceEntityManager {
     @Bean
     @Primary
     public DataSource dataSource() {
-        System.out.println("=== VÉRIFICATION DES VARIABLES (PostgreSQL ACTIF) ===");
-
-        // Afficher toutes les variables pour debug
-        Map<String, String> env = System.getenv();
-        env.forEach((key, value) -> {
-            System.out.println(key + ": " + value);
-        });
-
-        // Essayer les variables Railway standard
-        String host = System.getenv("PGHOST");
-        String port = System.getenv("PGPORT");
-        String database = System.getenv("PGDATABASE");
-        String username = System.getenv("PGUSER");
-        String password = System.getenv("PGPASSWORD");
-
-        if (host != null) {
-            System.out.println("✅ Variables PostgreSQL trouvées !");
-            String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, database);
-            System.out.println("URL: " + jdbcUrl);
-
-            return DataSourceBuilder.create()
-                    .url(jdbcUrl)
-                    .username(username)
-                    .password(password)
-                    .driverClassName("org.postgresql.Driver")
-                    .build();
-        } else {
-            throw new IllegalStateException("""
-                ❌ Variables PostgreSQL toujours pas trouvées !
-                
-                Sur Railway, allez dans :
-                1. Votre service d'application (Spring Boot)
-                2. Onglet "Variables" 
-                3. Vérifiez que les variables PostgreSQL sont injectées
-                """);
-        }
+        // SUPPRIMEZ TOUS LES System.out.println() - ils consomment la mémoire !
+        return DataSourceBuilder.create()
+                .url("jdbc:postgresql://postgres.railway.internal:5432/railway")
+                .username("postgres")
+                .password(System.getenv("PGPASSWORD"))
+                .driverClassName("org.postgresql.Driver")
+                .build();
     }
 
     @Bean(name = "jpaSharedEM_entityManagerFactory")
@@ -68,14 +38,13 @@ public class ForceEntityManager {
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
-        vendorAdapter.setShowSql(true);
+        vendorAdapter.setShowSql(false); // ← IMPORTANT: désactiver
         em.setJpaVendorAdapter(vendorAdapter);
 
         Properties props = new Properties();
         props.put("hibernate.hbm2ddl.auto", "update");
-        props.put("hibernate.show_sql", "true");
-        props.put("hibernate.format_sql", "true");
-        props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        props.put("hibernate.show_sql", "false"); // ← IMPORTANT: désactiver
+        props.put("hibernate.format_sql", "false");
         em.setJpaProperties(props);
 
         return em;

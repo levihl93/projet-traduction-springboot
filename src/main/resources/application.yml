@@ -5,19 +5,17 @@ spring:
     url: ${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 5  # ← RÉDUIRE le pool de connexions
+      maximum-pool-size: 3  # ← RÉDUIRE À 3
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false  # ← DÉSACTIVER les logs SQL
-    properties:
-      hibernate:
-        format_sql: false  # ← DÉSACTIVER
-        # dialect: org.hibernate.dialect.PostgreSQLDialect  # ← COMMENTEZ
+    show-sql: false  # ← DÉSACTIVER
 
-# RÉDUIRE les logs
+# RÉDUIRE AU MAXIMUM LES LOGS
 logging:
   level:
-    org.hibernate: WARN  # ← PASSER À WARN au lieu de INFO
-    com.zaxxer.hikari: WARN
+    root: WARN
     org.springframework: WARN
+    org.hibernate: WARN
+    tunutech.api: WARN
+    com.zaxxer.hikari: WARN
