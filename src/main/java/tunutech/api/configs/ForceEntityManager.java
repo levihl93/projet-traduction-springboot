@@ -19,7 +19,18 @@ public class ForceEntityManager {
     @Bean
     @Primary
     public DataSource dataSource() {
-        // Railway fournit ces variables au lieu de DATABASE_URL
+        // DEBUG: Afficher toutes les variables d'environnement
+        System.out.println("=== VARIABLES D'ENVIRONNEMENT RAILWAY ===");
+        System.out.println("PGHOST: " + System.getenv("PGHOST"));
+        System.out.println("PGPORT: " + System.getenv("PGPORT"));
+        System.out.println("PGDATABASE: " + System.getenv("PGDATABASE"));
+        System.out.println("PGUSER: " + System.getenv("PGUSER"));
+        System.out.println("PGPASSWORD: " + (System.getenv("PGPASSWORD") != null ? "***" : "null"));
+        System.out.println("DATABASE_URL: " + System.getenv("DATABASE_URL"));
+
+        // Chercher aussi les variables Railway spécifiques
+        System.out.println("RAILWAY_ENVIRONMENT: " + System.getenv("RAILWAY_ENVIRONMENT"));
+
         String host = System.getenv("PGHOST");
         String port = System.getenv("PGPORT");
         String database = System.getenv("PGDATABASE");
@@ -27,15 +38,11 @@ public class ForceEntityManager {
         String password = System.getenv("PGPASSWORD");
 
         if (host == null) {
-            // Fallback pour le développement local
-            host = "localhost";
-            port = "5432";
-            database = "localdb";
-            username = "postgres";
-            password = "password";
+            throw new IllegalStateException("❌ VARIABLES POSTGRESQL NON TROUVÉES sur Railway!");
         }
 
         String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, database);
+        System.out.println("✅ URL JDBC: " + jdbcUrl);
 
         return DataSourceBuilder.create()
                 .url(jdbcUrl)
