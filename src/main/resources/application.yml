@@ -1,21 +1,15 @@
 spring:
   profiles:
     active: nosecurity
-  datasource:
-    url: ${DATABASE_URL}
-    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-# Configuration de logging pour le débogage
-logging:
-  level:
-    org.hibernate: INFO
-    com.zaxxer.hikari: INFO
-    org.springframework.jdbc: INFO
+  # Configuration DataSource pour Railway
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/localdb}
+    driver-class-name: org.postgresql.Driver
