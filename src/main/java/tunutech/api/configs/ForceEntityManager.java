@@ -19,18 +19,28 @@ public class ForceEntityManager {
     @Bean
     @Primary
     public DataSource dataSource() {
-        // Utilise directement la DATABASE_URL de Railway
-        String databaseUrl = System.getenv("DATABASE_URL");
+        // Railway fournit ces variables au lieu de DATABASE_URL
+        String host = System.getenv("PGHOST");
+        String port = System.getenv("PGPORT");
+        String database = System.getenv("PGDATABASE");
+        String username = System.getenv("PGUSER");
+        String password = System.getenv("PGPASSWORD");
 
-        if (databaseUrl == null) {
-            throw new IllegalStateException("DATABASE_URL not found");
+        if (host == null) {
+            // Fallback pour le développement local
+            host = "localhost";
+            port = "5432";
+            database = "localdb";
+            username = "postgres";
+            password = "password";
         }
 
-        // Convertir l'URL Railway en format JDBC
-        String jdbcUrl = databaseUrl.replace("postgresql://", "jdbc:postgresql://");
+        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", host, port, database);
 
         return DataSourceBuilder.create()
                 .url(jdbcUrl)
+                .username(username)
+                .password(password)
                 .driverClassName("org.postgresql.Driver")
                 .build();
     }
